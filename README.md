@@ -103,8 +103,7 @@ Before proceeding with the installation, ensure that you have the following:
        <name>fs.defaultFS</name>
        <value>hdfs://localhost:9000</value>
   
-
- </property>
+   </property>
    ```
    Save the file and exit.
 
