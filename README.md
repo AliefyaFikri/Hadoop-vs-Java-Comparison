@@ -8,180 +8,221 @@ Group 11:
 3. Rizki Awanta Jordhie - 2106655034
 4. Shabrina Kamiliya Wiyana - 2106733894
 
-## Hadoop Installation
+## Hadoop Installation Guide
 
-This guide provides step-by-step instructions to install and configure Hadoop on a single-node (pseudo-distributed) setup. Follow these instructions to set up Hadoop on Ubuntu.
+This guide provides step-by-step instructions for installing Apache Hadoop on Ubuntu. Follow the instructions below to set up a single-node Hadoop cluster in pseudo-distributed mode.
 
 ### Prerequisites
+
+Before proceeding with the installation, ensure that you have the following:
+
 - Ubuntu operating system
-- JDK 8 or higher installed
+- Java Development Kit (JDK) version 8 or higher
 - Internet connectivity
 
-#### Step 1: Download Hadoop
+### Step 1: Download Hadoop
+
 1. Go to the Hadoop release page on the Apache website.
-2. Locate the download URL for Hadoop 3.3.2. For example: https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
-3. Open a terminal and use the wget command to download the Hadoop binary. For example: wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
+2. Locate the download URL for Hadoop 3.3.2. For example:
+   ```
+   https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
+   ```
+3. Open a terminal and use the `wget` command to download the Hadoop binary. For example:
+   ```
+   wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
+   ```
+   If you encounter certificate validation errors, you can use the `--no-check-certificate` option with `wget` to skip certificate validation.
 
-If you encounter certificate validation errors, you can use the --no-check-certificate option with wget to skip certificate validation.
+### Step 2: Unpack Hadoop
 
-#### Step 2: Unpack Hadoop
 1. Create a directory to store the Hadoop files. For example:
-  ```
-  mkdir ~/hadoop
-  ```
+   ```
+   mkdir ~/hadoop
+   ```
 2. Unpack the downloaded Hadoop binary using the following command:
-```
-tar -xvzf hadoop-3.3.2.tar.gz -C ~/hadoop
-```
+   ```
+   tar -xvzf hadoop-3.3.2.tar.gz -C ~/hadoop
+   ```
 3. Change the current directory to the Hadoop folder:
-```
-cd ~/hadoop/hadoop-3.3.2/
-```
+   ```
+   cd ~/hadoop/hadoop-3.3.2/
+   ```
 
-#### Step 3: Configure passphraseless SSH
+### Step 3: Configure passphraseless SSH
+
 1. Ensure that you can SSH to localhost without a passphrase. If necessary, install SSH using the following command:
-```
-sudo apt install ssh
-```
+   ```
+   sudo apt install ssh
+   ```
 2. Generate SSH keys and configure passphraseless SSH by running the following commands:
-```
-ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-chmod 0600 ~/.ssh/authorized_keys
-```
-If you encounter connection issues, you may need to restart the SSH service using the following command:
-```
-sudo service ssh restart
-```
+   ```
+   ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+   chmod 0600 ~/.ssh/authorized_keys
+   ```
+   If you encounter connection issues, you may need to restart the SSH service using the following command:
+   ```
+   sudo service ssh restart
+   ```
 
-#### Step 4: Configure Pseudo-Distributed Mode
-1. Set up environment variables by editing the ~/.bashrc file:
-```
-vi ~/.bashrc
-```
-Add the following lines to the file:
-```
-export JAVA_HOME=/path/to/your/JDK
-export HADOOP_HOME=~/hadoop/hadoop-3.3.2
-export PATH=$PATH:$HADOOP_HOME/bin
-export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-```
-Save the file and exit. Then, run the following command to apply the changes:
-```
-source ~/.bashrc
-```
-2. Edit the etc/hadoop/hadoop-env.sh file:
-```
-vi etc/hadoop/hadoop-env.sh
-```
-Set the JAVA_HOME environment variable to the path of your JDK installation:
-```
-export JAVA_HOME=/path/to/your/JDK
-```
-Save the file and exit.
-3. Edit the etc/hadoop/core-site.xml file:
-```
-vi etc/hadoop/core-site.xml
-```
-Add the following configuration inside the <configuration> section:
-```
-<property>
-    <name>fs.defaultFS</name>
-    <value>hdfs://localhost:9000</value>
-```
-Save the file and exit.
-4. Edit the etc/hadoop/hdfs-site.xml file:
-```
-vi etc/hadoop/hdfs-site.xml
-```
-Add the following configuration inside the <configuration> section:
-```
-<property>
-    <name>dfs.replication</name>
-    <value>1</value>
-</property>
-<property>
-    <name>dfs.namenode.name.dir</name>
-    <value>/home/yourusername/hadoop/dfs/name332</value>
-</property>
-<property>
-    <name>dfs.datanode.data.dir</name>
-    <value>/home/yourusername/hadoop/dfs/data332</value>
-</property>
-```
-Replace yourusername with your actual username and ensure that the specified directory paths exist:
-```
-mkdir -p ~/hadoop/dfs/name332
-mkdir -p ~/hadoop/dfs/data332
-```
-Save the file and exit.
-5. Save the file and exit.
-```
-vi etc/hadoop/mapred-site.xml
-```
-Add the following configuration inside the <configuration> section:
-```
-<property>
-    <name>mapreduce.framework.name</name>
-    <value>yarn</value>
-</property>
-<property>
-    <name>mapreduce.application.classpath</name>
-    <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
-</property>
-```
-Save the file and exit.
-6. Edit the etc/hadoop/yarn-site.xml file:
-```
-vi etc/hadoop/yarn-site.xml
-```
-Add the following configuration inside the <configuration> section:
-```
-<property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-</property>
-<property>
-    <name>yarn.nodemanager.env-whitelist</name>
-    <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
-</property>
-```
-Save the file and exit.
+### Step 4: Configure Pseudo-Distributed Mode
 
-#### Step 5: Format Namenode
+1. Set up environment variables by editing the `~/.bashrc` file:
+   ```
+   vi ~/.bashrc
+   ```
+   Add the following lines to the file:
+   ```bash
+   export JAVA_HOME=/path/to/your/JDK
+   export HADOOP_HOME=~/hadoop/hadoop-3.3.2
+   export PATH=$PATH:$HADOOP_HOME/bin
+   export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+   ```
+   Save the file and exit. Then, run the following command to apply the changes:
+   ```
+   source ~/.bashrc
+   ```
+
+2. Edit the `etc/hadoop/hadoop-env.sh` file:
+   ```
+   vi etc/hadoop/hadoop-env.sh
+   ```
+   Set the `JAVA_HOME` environment variable to the path of your JDK installation:
+   ```bash
+   export JAVA_HOME=/path/to/your/JDK
+   ```
+   Save the file and exit.
+
+3. Edit the `etc/hadoop/core-site.xml` file:
+   ```
+   vi etc/hadoop/core-site.xml
+   ```
+   Add the following configuration inside the `<configuration>` section:
+   ```xml
+   <property>
+       <name>fs.defaultFS</name>
+       <value>hdfs://localhost:9000</value>
+  
+
+ </property>
+   ```
+   Save the file and exit.
+
+4. Edit the `etc/hadoop/hdfs-site.xml` file:
+   ```
+   vi etc/hadoop/hdfs-site.xml
+   ```
+   Add the following configuration inside the `<configuration>` section:
+   ```xml
+   <property>
+       <name>dfs.replication</name>
+       <value>1</value>
+   </property>
+   <property>
+       <name>dfs.namenode.name.dir</name>
+       <value>/home/yourusername/hadoop/dfs/name332</value>
+   </property>
+   <property>
+       <name>dfs.datanode.data.dir</name>
+       <value>/home/yourusername/hadoop/dfs/data332</value>
+   </property>
+   ```
+   Replace `yourusername` with your actual username and ensure that the specified directory paths exist:
+   ```bash
+   mkdir -p ~/hadoop/dfs/name332
+   mkdir -p ~/hadoop/dfs/data332
+   ```
+   Save the file and exit.
+
+5. Edit the `etc/hadoop/mapred-site.xml` file:
+   ```
+   vi etc/hadoop/mapred-site.xml
+   ```
+   Add the following configuration inside the `<configuration>` section:
+   ```xml
+   <property>
+       <name>mapreduce.framework.name</name>
+       <value>yarn</value>
+   </property>
+   <property>
+       <name>mapreduce.application.classpath</name>
+       <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+   </property>
+   ```
+   Save the file and exit.
+
+6. Edit the `etc/hadoop/yarn-site.xml` file:
+   ```
+   vi etc/hadoop/yarn-site.xml
+   ```
+   Add the following configuration inside the `<configuration>` section:
+   ```xml
+   <property>
+       <name>yarn.nodemanager.aux-services</name>
+       <value>mapreduce_shuffle</value>
+   </property>
+   <property>
+       <name>yarn.nodemanager.env-whitelist</name>
+       <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+   </property>
+   ```
+   Save the file and exit.
+
+### Step 5: Format Namenode
+
 Run the following command to format the Hadoop namenode:
 ```
 bin/hdfs namenode -format
 ```
 
-#### Step 6: Start Hadoop Daemons
+### Step 6: Start Hadoop Daemons
+
 1. Start the NameNode and DataNode daemons by running the following command:
-```
-sbin/start-dfs.sh
-```
-2. Check the status of the daemons using the jps command:
-```
-jps
-```
-You should see four processes: NameNode, DataNode, SecondaryNameNode, and ResourceManager.
+   ```
+   sbin/start-dfs.sh
+   ```
+
+2. Check the status of the daemons using the `jps` command:
+   ```
+   jps
+   ```
+
+   You should see four processes: `NameNode`, `DataNode`, `SecondaryNameNode`, and `ResourceManager`.
+
 3. Access the Hadoop NameNode web interface by visiting the following URL in your web browser:
-```
-http://localhost:9870/dfshealth.html#tab-overview
-```
+   ```
+   http://localhost:9870/dfshealth.html#tab-overview
+   ```
+
 4. Start the YARN daemon by running the following command:
-```
-sbin/start-yarn.sh
-```
-5. Check the status of the YARN daemon using the jps command:
-```
-jps
-```
-You should see two additional processes: NodeManager and ResourceManager.
+   ```
+   sbin/start-yarn.sh
+   ```
+
+5. Check the status of the YARN daemon using the `jps` command:
+   ```
+   jps
+   ```
+
+   You should see two additional processes: `NodeManager` and `ResourceManager`.
+
 6. Access the YARN Resource Manager web interface by visiting the following URL in your web browser:
+   ```
+   http://localhost:8088
+
+/cluster
+   ```
+
+### Step 7: Shutdown Hadoop Services
+
+When you're done using Hadoop, you can shut down the daemons by running the following commands:
+
 ```
-http://localhost:8088
+sbin/stop-yarn.sh
+sbin/stop-dfs.sh
 ```
 
+To verify that the daemons have stopped, use the `jps` command, which should only show a single process.
 
 ## Hadoop Word Count
 
