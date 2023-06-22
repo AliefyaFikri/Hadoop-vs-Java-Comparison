@@ -54,6 +54,134 @@ If you encounter connection issues, you may need to restart the SSH service usin
 sudo service ssh restart
 ```
 
+#### Step 4: Configure Pseudo-Distributed Mode
+1. Set up environment variables by editing the ~/.bashrc file:
+```
+vi ~/.bashrc
+```
+Add the following lines to the file:
+```
+export JAVA_HOME=/path/to/your/JDK
+export HADOOP_HOME=~/hadoop/hadoop-3.3.2
+export PATH=$PATH:$HADOOP_HOME/bin
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+```
+Save the file and exit. Then, run the following command to apply the changes:
+```
+source ~/.bashrc
+```
+2. Edit the etc/hadoop/hadoop-env.sh file:
+```
+vi etc/hadoop/hadoop-env.sh
+```
+Set the JAVA_HOME environment variable to the path of your JDK installation:
+```
+export JAVA_HOME=/path/to/your/JDK
+```
+Save the file and exit.
+3. Edit the etc/hadoop/core-site.xml file:
+```
+vi etc/hadoop/core-site.xml
+```
+Add the following configuration inside the <configuration> section:
+```
+<property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://localhost:9000</value>
+```
+Save the file and exit.
+4. Edit the etc/hadoop/hdfs-site.xml file:
+```
+vi etc/hadoop/hdfs-site.xml
+```
+Add the following configuration inside the <configuration> section:
+```
+<property>
+    <name>dfs.replication</name>
+    <value>1</value>
+</property>
+<property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/home/yourusername/hadoop/dfs/name332</value>
+</property>
+<property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/home/yourusername/hadoop/dfs/data332</value>
+</property>
+```
+Replace yourusername with your actual username and ensure that the specified directory paths exist:
+```
+mkdir -p ~/hadoop/dfs/name332
+mkdir -p ~/hadoop/dfs/data332
+```
+Save the file and exit.
+5. Save the file and exit.
+```
+vi etc/hadoop/mapred-site.xml
+```
+Add the following configuration inside the <configuration> section:
+```
+<property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+</property>
+<property>
+    <name>mapreduce.application.classpath</name>
+    <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+</property>
+```
+Save the file and exit.
+6. Edit the etc/hadoop/yarn-site.xml file:
+```
+vi etc/hadoop/yarn-site.xml
+```
+Add the following configuration inside the <configuration> section:
+```
+<property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+</property>
+<property>
+    <name>yarn.nodemanager.env-whitelist</name>
+    <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+</property>
+```
+Save the file and exit.
+
+#### Step 5: Format Namenode
+Run the following command to format the Hadoop namenode:
+```
+bin/hdfs namenode -format
+```
+
+#### Step 6: Start Hadoop Daemons
+1. Start the NameNode and DataNode daemons by running the following command:
+```
+sbin/start-dfs.sh
+```
+2. Check the status of the daemons using the jps command:
+```
+jps
+```
+You should see four processes: NameNode, DataNode, SecondaryNameNode, and ResourceManager.
+3. Access the Hadoop NameNode web interface by visiting the following URL in your web browser:
+```
+http://localhost:9870/dfshealth.html#tab-overview
+```
+4. Start the YARN daemon by running the following command:
+```
+sbin/start-yarn.sh
+```
+5. Check the status of the YARN daemon using the jps command:
+```
+jps
+```
+You should see two additional processes: NodeManager and ResourceManager.
+6. Access the YARN Resource Manager web interface by visiting the following URL in your web browser:
+```
+http://localhost:8088
+```
+
 
 ## Hadoop Word Count
 
