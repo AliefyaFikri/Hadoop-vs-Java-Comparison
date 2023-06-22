@@ -26,9 +26,9 @@ If you encounter certificate validation errors, you can use the --no-check-certi
 
 #### Step 2: Unpack Hadoop
 1. Create a directory to store the Hadoop files. For example:
-```
-mkdir ~/hadoop
-```
+  ```
+  mkdir ~/hadoop
+  ```
 2. Unpack the downloaded Hadoop binary using the following command:
 ```
 tar -xvzf hadoop-3.3.2.tar.gz -C ~/hadoop
