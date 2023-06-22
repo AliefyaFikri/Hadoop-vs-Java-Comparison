@@ -207,9 +207,7 @@ bin/hdfs namenode -format
 
 6. Access the YARN Resource Manager web interface by visiting the following URL in your web browser:
    ```
-   http://localhost:8088
-
-/cluster
+   http://localhost:8088/cluster
    ```
 
 ### Step 7: Shutdown Hadoop Services
