@@ -10,9 +10,50 @@ Group 11:
 
 ## Hadoop Installation
 
--
--
--
+This guide provides step-by-step instructions to install and configure Hadoop on a single-node (pseudo-distributed) setup. Follow these instructions to set up Hadoop on Ubuntu.
+
+### Prerequisites
+- Ubuntu operating system
+- JDK 8 or higher installed
+- Internet connectivity
+
+#### Step 1: Download Hadoop
+1. Go to the Hadoop release page on the Apache website.
+2. Locate the download URL for Hadoop 3.3.2. For example: https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
+3. Open a terminal and use the wget command to download the Hadoop binary. For example: wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz
+
+If you encounter certificate validation errors, you can use the --no-check-certificate option with wget to skip certificate validation.
+
+#### Step 2: Unpack Hadoop
+1. Create a directory to store the Hadoop files. For example:
+```
+mkdir ~/hadoop
+```
+2. Unpack the downloaded Hadoop binary using the following command:
+```
+tar -xvzf hadoop-3.3.2.tar.gz -C ~/hadoop
+```
+3. Change the current directory to the Hadoop folder:
+```
+cd ~/hadoop/hadoop-3.3.2/
+```
+
+#### Step 3: Configure passphraseless SSH
+1. Ensure that you can SSH to localhost without a passphrase. If necessary, install SSH using the following command:
+```
+sudo apt install ssh
+```
+2. Generate SSH keys and configure passphraseless SSH by running the following commands:
+```
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 0600 ~/.ssh/authorized_keys
+```
+If you encounter connection issues, you may need to restart the SSH service using the following command:
+```
+sudo service ssh restart
+```
+
 
 ## Hadoop Word Count
 
